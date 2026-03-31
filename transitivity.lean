@@ -4,7 +4,7 @@ open Lean Meta Elab Tactic
 
 universe u
 
--- ─── 1. Set Infrastructure ──────────────────────────────────────────────────
+
 
 def Set (α : Type u) : Type u := α → Prop
 
@@ -19,7 +19,7 @@ protected theorem Subset.trans {α : Type u} {s t u : Set α}
     (h₁ : s ⊆ t) (h₂ : t ⊆ u) : s ⊆ u :=
   fun _x hx => h₂ _x (h₁ _x hx)
 
--- Register Trans using the standard notation so typeclasses resolve easily
+-- reg Trans using the standard notation so typeclasses resolve
 instance {α : Type u} : Trans (α := Set α) (· ⊆ ·) (· ⊆ ·) (· ⊆ ·) :=
   ⟨Set.Subset.trans⟩
 
@@ -33,16 +33,15 @@ variable {α : Type u}
 
 -- handling generic tactics
 
-/-- a wrapper for Trans.trans.
-    By enforcing that the relation R is the exact same for all three steps,
-    Lean's elaborator doesn't get stuck trying to guess the relation for the ?_ hole. -/
+-- a wrapper for Trans.trans.
+-- by enforcing that the relation R is the exact same for all three steps
 theorem step_trans {β : Sort _} {R : β → β → Prop} [Trans R R R]
     {a b c : β} (h₁ : R a b) (h₂ : R b c) : R a c :=
   Trans.trans h₁ h₂
 
 
-/-- Extracts the LHS and RHS from any applied relation.
-    Grabs the last two arguments, bypassing hidden implicit type arguments. -/
+-- extracts the LHS and RHS from any applied relation.
+-- gets the last two arguments bypassing hidden implicit type arguments
 private def getLhsRhs (e : Expr) : Option (Expr × Expr) :=
   let args := e.getAppArgs
   if args.size ≥ 2 then
@@ -66,7 +65,7 @@ elab "step" : tactic => do
         -- Guard against infinite loops from reflexive hypotheses (e.g., B ⊆ B)
         if hypLhs == hypRhs then continue
 
-        -- Graph Check: Does this hypothesis start at our current goal's LHS?
+        -- Graph Check: Does this hypothesis start at our current goals LHS?
         if hypLhs == goalLhs then
 
           -- Case A: Exact Match (Destination Reached)
