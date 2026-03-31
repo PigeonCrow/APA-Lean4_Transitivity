@@ -94,10 +94,7 @@ macro "follow_chain" : tactic => `(tactic| repeat step)
 
 
 
-
-
-
--- Examples
+-- Examples ---
 
 -- Example 1 — basic subset chain
 example (A B C : Set α) (h1 : A ⊆ B) (h2 : B ⊆ C) : A ⊆ C := by
